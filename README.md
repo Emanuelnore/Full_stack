@@ -8,8 +8,8 @@ Aplicación fullstack que sincroniza productos de Shopify, los persiste en Postg
 - Frontend: React + Vite + TailwindCSS
 
 ## Requisitos previos
-- Node.js instalado
-- PostgreSQL instalado y corriendo
+- Node.js instalado → https://nodejs.org
+- PostgreSQL instalado → https://www.postgresql.org/download/windows/
 - Cuenta de Shopify con Access Token
 
 ## Setup
@@ -17,18 +17,24 @@ Aplicación fullstack que sincroniza productos de Shopify, los persiste en Postg
 ### 1. Clonar el repositorio
 ```bash
 git clone <url>
+cd Prueba_Tecnica
 ```
 
-### 2. Backend
+### 2. Crear la base de datos
+- Abre pgAdmin 4
+- Clic derecho en Databases → Create → Database
+- Nombre: Datos
+
+### 3. Backend
 ```bash
 cd backend
 npm install
 ```
 
-Crea un `.env` con:
+Crea un archivo `.env` en la carpeta `backend/`:
 ```env
 PORT=3001
-DATABASE_URL="postgresql://postgres:PASSWORD@localhost:5432/Datos"
+DATABASE_URL="postgresql://postgres:TU_PASSWORD@localhost:5432/Datos"
 SHOPIFY_STORE_URL=https://tu-tienda.myshopify.com
 SHOPIFY_ACCESS_TOKEN=tu_token
 JWT_SECRET=tu_secret
@@ -36,12 +42,17 @@ ADMIN_USERNAME=admin
 ADMIN_PASSWORD=1234
 ```
 
+Crea las tablas en la DB:
 ```bash
 npx prisma migrate dev --name init
+```
+
+Arranca el servidor:
+```bash
 npm run dev
 ```
 
-### 3. Frontend
+### 4. Frontend
 ```bash
 cd frontend
 npm install
