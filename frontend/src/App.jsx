@@ -13,36 +13,21 @@ function App() {
   const [message, setMessage] = useState('')
   const [error, setError] = useState('')
 
-  // Auto sync solo una vez al montar
   useEffect(() => {
-    const autoSync = async () => {
-      setSyncing(true)
-      try {
-        await syncProducts()
-      } catch {
-        setError('Error al sincronizar automáticamente')
-      } finally {
-        setSyncing(false)
-      }
-    }
-    autoSync()
-  }, [])
-
-  // Carga productos cada vez que cambia el status
-  useEffect(() => {
-    const load = async () => {
+    const init = async () => {
       setLoading(true)
       setError('')
       try {
+        await syncProducts()
         const res = await getProducts({ status })
-        setProducts(res.data.data || [])
+        setProducts(res.data || [])  // ← corregido
       } catch {
         setError('Error al cargar productos')
       } finally {
         setLoading(false)
       }
     }
-    load()
+    init()
   }, [status])
 
   const handleSync = async () => {
@@ -53,7 +38,7 @@ function App() {
       const res = await syncProducts()
       setMessage(res.data.message)
       const res2 = await getProducts({ status })
-      setProducts(res2.data.data || [])
+      setProducts(res2.data || [])  // ← corregido
     } catch {
       setError('Error al sincronizar')
     } finally {
