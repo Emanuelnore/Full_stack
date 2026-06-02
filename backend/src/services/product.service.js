@@ -32,8 +32,26 @@ async function upsertProduct(product) {
   })
 }
 
+async function syncProducts(products) {
+  let created = 0
+  let updated = 0
+
+  for (const product of products) {
+    const existing = await prisma.product.findUnique({
+      where: { shopify_id: product.shopify_id }
+    })
+
+    await upsertProduct(product)
+
+    existing ? updated++ : created++
+  }
+
+  return { created, updated, total: products.length }
+}
+
 module.exports = {
   listProducts,
   getProduct,
-  upsertProduct
+  upsertProduct,
+  syncProducts
 }

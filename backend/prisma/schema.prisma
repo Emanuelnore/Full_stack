@@ -8,13 +8,67 @@ datasource db {
 }
 
 model Product {
-  id                 Int      @id @default(autoincrement())
-  shopify_id         String   @unique
-  title              String
-  status             String
-  vendor             String?
-  price              String
-  inventory_quantity Int      @default(0)
-  image_url          String?
-  synced_at          DateTime @default(now())
+  id         Int      @id @default(autoincrement())
+  shopify_id String   @unique
+  title      String
+  status     String   // active | draft | archived
+  vendor     String?
+  price      Float    // antes era String; ahora Float para poder calcular
+  stock      Int      @default(0) // inventory_quantity de la 1ra variante
+  image_url  String?
+  synced_at  DateTime @default(now())
+
+  order_items OrderItem[]
+}
+
+model Customer {
+  id         Int      @id @default(autoincrement())
+  name       String
+  email      String   @unique
+  tier       String   @default("regular") // regular | vip | wholesale
+  created_at DateTime @default(now())
+
+  orders     Order[]
+}
+
+model DiscountRule {
+  id               Int       @id @default(autoincrement())
+  code             String    @unique
+  type             String    // percentage | fixed
+  value            Float     // % (ej. 20) o monto fijo (ej. 5000) segun type
+  min_order_amount Float     @default(0)
+  applicable_tier  String?   // null = aplica a todos; o regular | vip | wholesale
+  max_uses         Int?      // null = usos ilimitados
+  uses_count       Int       @default(0)
+  expires_at       DateTime?
+  created_at       DateTime  @default(now())
+
+  orders           Order[]
+}
+
+model Order {
+  id               Int           @id @default(autoincrement())
+  customer_id      Int
+  customer         Customer      @relation(fields: [customer_id], references: [id])
+  discount_rule_id Int?
+  discount_rule    DiscountRule? @relation(fields: [discount_rule_id], references: [id])
+  subtotal         Float
+  discount         Float         @default(0)
+  total            Float
+  status           String        @default("pending") // pending | confirmed | cancelled
+  created_at       DateTime      @default(now())
+
+  items            OrderItem[]
+}
+
+model OrderItem {
+  id         Int     @id @default(autoincrement())
+  order_id   Int
+  order      Order   @relation(fields: [order_id], references: [id])
+  product_id Int
+  product    Product @relation(fields: [product_id], references: [id])
+  quantity   Int
+  price      Float   // precio "congelado" al momento de crear la orden
+
+  @@index([order_id])
 }

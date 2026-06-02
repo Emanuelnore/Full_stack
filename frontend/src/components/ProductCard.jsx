@@ -1,12 +1,8 @@
-const ProductCard = ({ product }) => {
+const ProductCard = ({ product, onAdd }) => {
   return (
     <div className="bg-white rounded-xl shadow p-4 flex flex-col gap-3 border border-gray-100">
       {product.image_url ? (
-        <img
-          src={product.image_url}
-          alt={product.title}
-          className="w-full h-48 object-cover rounded-lg"
-        />
+        <img src={product.image_url} alt={product.title} className="w-full h-48 object-cover rounded-lg" />
       ) : (
         <div className="w-full h-48 bg-gray-100 rounded-lg flex items-center justify-center text-gray-400">
           Sin imagen
@@ -31,7 +27,21 @@ const ProductCard = ({ product }) => {
         </span>
       </div>
 
-      <p className="text-gray-500 text-sm">Stock: {product.inventory_quantity}</p>
+      <p className="text-gray-500 text-sm">Stock: {product.stock}</p>
+
+      {onAdd && (
+        <button
+          onClick={() => onAdd(product)}
+          disabled={product.stock <= 0}
+          className={`mt-1 py-2 rounded-lg text-white text-sm font-medium transition-all ${
+            product.stock <= 0
+              ? 'bg-gray-300 cursor-not-allowed'
+              : 'bg-purple-600 hover:bg-purple-700'
+          }`}
+        >
+          {product.stock <= 0 ? 'Agotado' : 'Agregar al carrito'}
+        </button>
+      )}
     </div>
   )
 }
