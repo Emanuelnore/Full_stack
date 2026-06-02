@@ -19,7 +19,7 @@ const Login = () => {
       })
       localStorage.setItem('token', res.data.token)
       navigate('/')
-    } catch (_err) {
+    } catch  {
       setError('Credenciales incorrectas')
     } finally {
       setLoading(false)
